@@ -1,3 +1,4 @@
+
 const socket = io();
 
 const messages = document.getElementById("messages");
@@ -24,4 +25,5 @@ function appendMessage(msg, side) {
 
     messages.appendChild(div);
     messages.scrollTop = messages.scrollHeight;
+
 }
