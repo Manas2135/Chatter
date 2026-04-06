@@ -11,10 +11,7 @@
   "description": "",
   "dependencies": {
     "express": "^5.2.1",
-<<<<<<< HEAD
     "http": "^0.0.1-security",
-=======
->>>>>>> 2775ef04fdffce6a44b9c5e62c7dee0e4016ff43
     "nodemon": "^3.1.14",
     "socket.io": "^4.8.3"
   }
