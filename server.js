@@ -9,12 +9,11 @@ const crypto = require("crypto");
 const { sendEmail } = require("./email");
 const { initDb, getUserByEmail, createUser, getUserById, getMessagesBetweenUsers, saveMessage, searchUsers, updateUserPassword, verifyUserEmail, getAllUsersExcept } = require("./db");
 
-
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 
-const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_SECRET = process.env.JWT_SECRET || "chatter-secure-jwt-secret-key-2026";
 const OTP_EXPIRY = 10 * 60 * 1000;
 
 const otpStore = new Map();
@@ -119,9 +118,9 @@ app.post("/api/login-with-otp", async (req, res) => {
         return res.status(401).json({ error: "Invalid credentials" });
     }
 
-    const token = jwt.sign({ id: user.id, email: user.email, name: user.name }, JWT_SECRET, { expiresIn: "7d" });
+    const token = jwt.sign({ id: user._id.toString(), name: user.name }, JWT_SECRET, { expiresIn: "7d" });
     otpStore.delete(email);
-    res.json({ token, user: { id: user.id, email: user.email, name: user.name } });
+    res.json({ token, user: { id: user._id.toString(), name: user.name } });
 });
 
 app.post("/api/login", async (req, res) => {
@@ -141,8 +140,8 @@ app.post("/api/login", async (req, res) => {
             return res.status(401).json({ error: "Invalid credentials" });
         }
 
-        const token = jwt.sign({ id: user.id, email: user.email, name: user.name }, JWT_SECRET, { expiresIn: "7d" });
-        res.json({ token, user: { id: user.id, email: user.email, name: user.name } });
+        const token = jwt.sign({ id: user._id.toString(), name: user.name }, JWT_SECRET, { expiresIn: "7d" });
+        res.json({ token, user: { id: user._id.toString(), name: user.name } });
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: "Server error" });
@@ -195,13 +194,6 @@ app.get("/api/messages/:userId", authenticateToken, async (req, res) => {
     res.json(messages);
 });
 
-app.get("/api/messages/:userId", authenticateToken, async (req, res) => {
-    const otherUserId = req.params.userId;
-    const currentUserId = req.user.id;
-    const messages = await getMessagesBetweenUsers(currentUserId, otherUserId);
-    res.json(messages);
-});
-
 app.get("/api/verify-token", authenticateToken, (req, res) => {
     res.json({ user: req.user });
 });
@@ -210,7 +202,6 @@ io.on("connection", (socket) => {
     const userId = socket.user.id;
     userSockets.set(userId, socket.id);
     onlineUsers.add(userId);
-    console.log(`User ${socket.user.name} connected`);
 
     const onlineUsersList = Array.from(onlineUsers).map(id => ({ id }));
     socket.emit("online users", onlineUsersList);
@@ -221,8 +212,8 @@ io.on("connection", (socket) => {
         const fromUserId = userId;
 
         const savedMsg = await saveMessage(fromUserId, toUserId, message);
-
         const recipientSocketId = userSockets.get(toUserId);
+
         if (recipientSocketId) {
             io.to(recipientSocketId).emit("private message", {
                 id: savedMsg.id,
@@ -257,7 +248,6 @@ io.on("connection", (socket) => {
         userSockets.delete(userId);
         onlineUsers.delete(userId);
         socket.broadcast.emit("user offline", { userId });
-        console.log(`User ${socket.user.name} disconnected`);
     });
 });
 
@@ -266,4 +256,3 @@ initDb().then(() => {
         console.log("Server running on http://localhost:3000");
     });
 });
-

@@ -1,11 +1,10 @@
 const mongoose = require("mongoose");
 
-// 1. Define Schemas
 const userSchema = new mongoose.Schema({
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     name: { type: String, required: true },
-    verified: { type: Boolean, default: false } // We can drop this later if you ditch OTP
+    verified: { type: Boolean, default: false }
 }, { timestamps: true });
 
 const messageSchema = new mongoose.Schema({
@@ -14,11 +13,9 @@ const messageSchema = new mongoose.Schema({
     message: { type: String, required: true }
 }, { timestamps: true });
 
-// 2. Create Models
 const User = mongoose.model("User", userSchema);
 const Message = mongoose.model("Message", messageSchema);
 
-// 3. Database Connection
 async function initDb() {
     try {
         await mongoose.connect(process.env.MONGO_URI);
@@ -29,7 +26,6 @@ async function initDb() {
     }
 }
 
-// 4. Database Operations
 async function getUserByEmail(email) {
     return await User.findOne({ email });
 }
@@ -39,7 +35,7 @@ async function getUserById(id) {
 }
 
 async function createUser(email, hashedPassword, name) {
-    const user = new User({ email, password: hashedPassword, name, verified: false });
+    const user = new User({ email, password: hashedPassword, name, verified: true });
     await user.save();
     return user._id;
 }
@@ -54,12 +50,12 @@ async function updateUserPassword(email, hashedPassword) {
 
 async function saveMessage(fromUserId, toUserId, messageText) {
     const msg = new Message({
-        from_user: fromUserId,
-        to_user: toUserId,
+        from_user: new mongoose.Types.ObjectId(fromUserId),
+        to_user: new mongoose.Types.ObjectId(toUserId),
         message: messageText
     });
     await msg.save();
-    return { id: msg._id, timestamp: msg.createdAt };
+    return { id: msg._id.toString(), timestamp: msg.createdAt };
 }
 
 async function getMessagesBetweenUsers(user1, user2) {
@@ -70,13 +66,12 @@ async function getMessagesBetweenUsers(user1, user2) {
         ]
     })
         .sort({ createdAt: 1 })
-        .populate('from_user', 'name'); // Joins the user table to get the sender's name
+        .populate('from_user', 'name');
 
-    // Map it to match the exact format your frontend currently expects
     return messages.map(msg => ({
-        id: msg._id,
-        from_user: msg.from_user._id,
-        to_user: msg.to_user,
+        id: msg._id.toString(),
+        from_user: msg.from_user._id.toString(),
+        to_user: msg.to_user.toString(),
         message: msg.message,
         timestamp: msg.createdAt,
         fromName: msg.from_user.name
@@ -84,19 +79,24 @@ async function getMessagesBetweenUsers(user1, user2) {
 }
 
 async function searchUsers(query, excludeUserId) {
-    return await User.find({
+    const users = await User.find({
         _id: { $ne: excludeUserId },
-        $or: [
-            { email: { $regex: query, $options: 'i' } },
-            { name: { $regex: query, $options: 'i' } }
-        ]
-    }).select('id email name').limit(20);
+        name: { $regex: query, $options: 'i' }
+    }).limit(20);
+
+    return users.map(u => ({
+        id: u._id.toString(),
+        name: u.name
+    }));
 }
 
 async function getAllUsersExcept(userId) {
-    return await User.find({ _id: { $ne: userId } })
-        .select('id email name')
-        .sort({ name: 1 });
+    const users = await User.find({ _id: { $ne: userId } }).sort({ name: 1 });
+
+    return users.map(u => ({
+        id: u._id.toString(),
+        name: u.name
+    }));
 }
 
 module.exports = {

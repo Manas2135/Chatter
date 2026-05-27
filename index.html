@@ -13,14 +13,12 @@
     <div id="authOverlay" class="auth-overlay">
         <div class="auth-container">
             <div id="loginForm" class="auth-form active">
-                <h2>Welcome Back</h2>
-                <input type="email" id="loginEmail" placeholder="Email" required>
+                <h2>Chatter</h2>
+                <input type="email" id="loginEmail" placeholder="Email" style="margin-bottom: 8px;" required>
                 <input type="password" id="loginPassword" placeholder="Password" required>
                 <button id="loginBtn">Login</button>
-
                 <button id="goToSignupBtn" class="switch-form-btn secondary-btn" style="margin-top: 10px;">Create an
                     Account</button>
-
                 <a href="#" id="forgotPasswordLink" class="forgot-link">Forgot Password?</a>
                 <a href="#" id="showOtpLoginBtn" class="forgot-link" style="margin-top:5px;">Login with OTP instead</a>
                 <div id="loginError" class="error-msg"></div>
@@ -28,23 +26,22 @@
 
             <div id="otpLoginSection" style="display: none;">
                 <h2>Login with OTP</h2>
-                <input type="email" id="loginOtpEmail" placeholder="Email" required>
+                <input type="email" id="loginOtpEmail" placeholder="Email" style="margin-bottom: 8px;" required>
                 <button id="sendLoginOtpBtn">Send OTP</button>
                 <div id="loginOtpGroup" style="display: none; margin-top: 10px;">
                     <input type="text" id="loginOtpCode" placeholder="Enter OTP" maxlength="6">
-                    <button id="verifyLoginOtpBtn" style="display: none;">Verify & Login</button>
+                    <button id="verifyLoginOtpBtn" style="display: none; margin-top: 10px;">Verify & Login</button>
                 </div>
                 <div id="loginOtpError" class="error-msg"></div>
                 <a href="#" id="backToPasswordLogin" class="back-link">← Back to password login</a>
             </div>
 
             <div id="signupForm" class="auth-form" style="display: none;">
-                <h2>Create Account</h2>
-                <input type="text" id="signupName" placeholder="Full Name" required>
-                <input type="email" id="signupEmail" placeholder="Email" required>
+                <h2>Chatter</h2>
+                <input type="text" id="signupName" placeholder="Full Name" style="margin-bottom: 8px;" required>
+                <input type="email" id="signupEmail" placeholder="Email" style="margin-bottom: 8px;" required>
                 <input type="password" id="signupPassword" placeholder="Password" required>
                 <button id="signupBtn">Sign Up</button>
-
                 <button id="goToLoginBtn" class="switch-form-btn secondary-btn" style="margin-top: 10px;">Already have
                     an account? Login</button>
                 <div id="signupError" class="error-msg"></div>
@@ -55,7 +52,6 @@
                 <p>We've sent an OTP to <span id="otpEmail"></span></p>
                 <input type="text" id="otpCode" placeholder="Enter 6-digit OTP" maxlength="6">
                 <button id="verifyOtpBtn">Verify</button>
-                <button id="resendOtpBtn" class="secondary-btn" style="margin-top: 10px;">Resend OTP</button>
                 <div id="otpError" class="error-msg"></div>
             </div>
 
@@ -79,7 +75,6 @@
     </div>
 
     <div id="chatApp" class="chat-app" style="display: none;">
-
         <div class="profile-section">
             <div id="profileIcon" class="profile-icon">
                 <span id="profileInitial"></span>
@@ -87,7 +82,6 @@
             <div id="dropdownMenu" class="dropdown-menu">
                 <div class="user-info">
                     <strong id="userName"></strong>
-                    <small id="userEmail"></small>
                 </div>
                 <hr>
                 <button id="logoutBtn">Logout</button>
@@ -95,10 +89,9 @@
         </div>
 
         <div class="main-chat-layout">
-
             <div class="sidebar">
                 <div class="search-box">
-                    <input type="text" id="searchInput" placeholder="Search users...">
+                    <input type="text" id="searchInput" placeholder="Search users by name...">
                 </div>
                 <div id="userList" class="user-list"></div>
             </div>
@@ -118,7 +111,6 @@
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
 
