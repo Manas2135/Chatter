@@ -1,88 +1,574 @@
+/* ==========================================================================
+   1. GLOBAL RESETS & COLOR SYSTEM (Custom Blue Theme)
+   ========================================================================== */
+:root {
+    /* Colors explicitly derived from the user's chatting screen background */
+    --bg-main: #2b7797;
+    /* The exact light blue from your screenshot */
+    --panel-bg: #111b21;
+    /* Deep, premium dark surface for main container */
+    --sidebar-bg: #182229;
+    /* Distinct dark shade for list management */
+    --chat-bg: #0b141a;
+    /* Clean, near-black for message legibility */
+
+    --text-primary: #e9edef;
+    /* Near-white for clear reading contrast */
+    --text-secondary: #8696a0;
+    /* Slate gray for secondary text and inputs */
+    --accent-color: #2b7797;
+    /* Clean light blue used for accents and states */
+
+    /* Message Bubble Colors - Zero Greens Used */
+    --msg-sent: #2b7797;
+    /* Custom light blue matching your theme */
+    --msg-received: #202c33;
+    /* Muted dark gray for incoming text */
+
+    --border-color: #222e35;
+    /* Sleek separation borders */
+    --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
 * {
+    box-sizing: border-box;
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
+    font-family: var(--font-stack);
+    -webkit-font-smoothing: antialiased;
 }
 
 body {
-    font-family: Arial, sans-serif;
-    background: #2c7da0;
+    background-color: var(--bg-main);
     height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-primary);
     overflow: hidden;
 }
 
-.chat-container {
+/* ==========================================================================
+   2. AUTH OVERLAY & STREAMLINED LOGIN FORMS
+   ========================================================================== */
+.auth-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--bg-main);
+    /* Forces the light blue across the login experience */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+.auth-container {
+    background: var(--panel-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    width: 100%;
+    max-width: 400px;
+    padding: 35px 30px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
     display: flex;
     flex-direction: column;
-    height: 100%;
-    padding: 10px;
 }
 
-h1 {
+/* Hidden by request to remove duplicate/conflicting tab links */
+.auth-tabs {
+    display: none !important;
+}
+
+.auth-form {
+    display: none;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.auth-form.active {
+    display: flex;
+}
+
+.auth-container h2 {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: var(--text-primary);
     text-align: center;
-    color: white;
-    margin: 10px 0;
 }
 
-#messages {
+.auth-container p {
+    color: var(--text-secondary);
+    font-size: 14px;
+    line-height: 1.4;
+    text-align: center;
+    margin-bottom: 4px;
+}
+
+.auth-container input {
+    width: 100%;
+    background: #202c33;
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    padding: 14px 16px;
+    border-radius: 8px;
+    font-size: 15px;
+    outline: none;
+    transition: border-color 0.2s, background-color 0.2s;
+}
+
+.auth-container input:focus {
+    border-color: var(--accent-color);
+    background: #2a3942;
+}
+
+/* Master Form Button Actions */
+.auth-container button {
+    width: 100%;
+    background: var(--accent-color);
+    color: var(--text-primary);
+    border: none;
+    padding: 14px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: filter 0.2s, opacity 0.2s;
+}
+
+.auth-container button:hover {
+    filter: brightness(1.15);
+}
+
+.auth-container button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Secondary Actions Layer (Sign Up Stack Setup) */
+.auth-container .secondary-btn {
+    background: transparent;
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+}
+
+.auth-container .secondary-btn:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: var(--text-secondary);
+}
+
+/* Link alignment and utility rules */
+.forgot-link,
+.back-link {
+    color: var(--text-secondary);
+    font-size: 13px;
+    text-decoration: none;
+    text-align: center;
+    margin-top: 4px;
+    transition: color 0.2s;
+}
+
+.forgot-link:hover,
+.back-link:hover {
+    color: var(--text-primary);
+    text-decoration: underline;
+}
+
+.error-msg {
+    color: #ef5350;
+    font-size: 13px;
+    text-align: center;
+    min-height: 18px;
+    font-weight: 500;
+}
+
+/* ==========================================================================
+   3. CHAT APPLICATION MAIN LAYOUT FRAMEWORK
+   ========================================================================== */
+.chat-app {
+    width: 95vw;
+    height: 90vh;
+    max-width: 1600px;
+    min-width: 800px;
+    background: var(--panel-bg);
+    border-radius: 12px;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.4);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+}
+
+/* Profile Dropdown Header Positioning */
+.profile-section {
+    position: absolute;
+    top: 12px;
+    left: 16px;
+    z-index: 100;
+}
+
+.profile-icon {
+    width: 40px;
+    height: 40px;
+    background: var(--accent-color);
+    color: var(--text-primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 16px;
+    cursor: pointer;
+    user-select: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 50px;
+    left: 0;
+    background: #233138;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    width: 240px;
+    padding: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    z-index: 101;
+}
+
+.dropdown-menu.show {
+    display: block;
+}
+
+.user-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding-bottom: 8px;
+}
+
+.user-info strong {
+    font-size: 15px;
+    color: var(--text-primary);
+}
+
+.user-info small {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.dropdown-menu hr {
+    border: 0;
+    border-top: 1px solid var(--border-color);
+    margin: 8px 0;
+}
+
+.dropdown-menu button {
+    width: 100%;
+    background: #ea0038;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.dropdown-menu button:hover {
+    background: #c2002e;
+}
+
+/* Window Workspace Wrapper */
+.main-chat-layout {
+    display: flex;
+    width: 100%;
+    height: 100%;
+}
+
+/* ==========================================================================
+   4. SIDEBAR MECHANICS (Users list & Search)
+   ========================================================================== */
+.sidebar {
+    width: 30%;
+    min-width: 300px;
+    max-width: 400px;
+    background: var(--sidebar-bg);
+    border-right: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+}
+
+.search-box {
+    padding: 12px 12px 12px 68px;
+    /* Safe padding separation clearing layout header */
+    background: var(--sidebar-bg);
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    height: 64px;
+}
+
+.search-box input {
+    width: 100%;
+    background: #111b21;
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    outline: none;
+}
+
+.search-box input:focus {
+    border-color: var(--accent-color);
+}
+
+.user-list {
     flex: 1;
     overflow-y: auto;
-    padding: 10px;
+}
+
+.user-item {
+    display: flex;
+    align-items: center;
+    padding: 14px 16px;
+    gap: 12px;
+    cursor: pointer;
+    border-bottom: 1px solid rgba(34, 46, 53, 0.3);
+    transition: background-color 0.15s;
+}
+
+.user-item:hover {
+    background-color: #111b21;
+}
+
+.user-avatar {
+    width: 44px;
+    height: 44px;
+    background: #374248;
+    color: var(--text-primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+.user-details {
+    flex: 1;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    margin-left: 10%;
-    margin-right: 10%;
-    border: white solid 2px;
-    border-radius: 2rem;
-    background: rgb(255, 255, 255, 0.4);
+    gap: 4px;
+    overflow: hidden;
 }
 
-.message {
-    max-width: 200px;
-    padding: 10px;
-    margin: 8px;
-    border-radius: 15px;
+.user-name {
+    font-size: 15.5px;
+    font-weight: 500;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-.left {
-    background: rgb(44, 125, 160);
-    color: white;
-    align-self: flex-end;
+.user-email {
+    font-size: 13px;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-.right {
-    background: rgb(255, 255, 255);
-    color: rgb(0, 0, 0);
-    align-self: flex-start;
+.online-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #374248;
+    flex-shrink: 0;
+    margin-left: 4px;
 }
 
-
-.input-box {
-    display: flex;
-    background: #333;
-    border-radius: 30px;
-    padding: 5px 10px;
-    margin: 10px;
-    width: 50%;
-    align-self: center;
-}
-
-.input-box input {
+/* ==========================================================================
+   5. CHAT FEED HUB
+   ========================================================================== */
+.chat-area {
     flex: 1;
-    border: none;
-    outline: none;
-    background: transparent;
-    color: white;
-    padding: 10px;
+    background: var(--chat-bg);
+    display: flex;
+    flex-direction: column;
 }
 
-.input-box button {
-    border: none;
-    background: black;
-    color: rgb(44, 125, 160);
+.chat-header {
+    height: 64px;
+    background: var(--panel-bg);
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+}
 
-    padding: 10px 20px;
-    border-radius: 20px;
+.chat-header h3 {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.messages-container {
+    flex: 1;
+    padding: 24px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.messages {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.messages:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+/* ==========================================================================
+   6. PREMIUM MONOCHROME CHAT BUBBLES
+   ========================================================================== */
+.message {
+    max-width: 65%;
+    padding: 10px 14px 8px 14px;
+    margin: 2px 0;
+    border-radius: 12px;
+    position: relative;
+    word-wrap: break-word;
+    clear: both;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Sent Messages (Right Hand side alignment matching prompt requirements) */
+.message.sent {
+    background: var(--msg-sent);
+    color: var(--text-primary);
+    float: right;
+    align-self: flex-end;
+    border-top-right-radius: 2px;
+}
+
+/* Received Messages (Left Hand side alignment matching prompt requirements) */
+.message.received {
+    background: var(--msg-received);
+    color: var(--text-primary);
+    float: left;
+    align-self: flex-start;
+    border-top-left-radius: 2px;
+}
+
+.message .sender-name {
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: var(--accent-color);
+}
+
+.message .message-text {
+    font-size: 14.5px;
+    line-height: 1.5;
+}
+
+.message .timestamp {
+    font-size: 10.5px;
+    color: rgba(233, 237, 239, 0.6);
+    align-self: flex-end;
+    margin-top: 4px;
+    margin-left: 20px;
+    user-select: none;
+}
+
+/* ==========================================================================
+   7. CHAT MESSAGE COMPOSER BAR
+   ========================================================================== */
+.input-container {
+    background: var(--panel-bg);
+    padding: 12px 20px;
+    display: flex;
+    flex-direction: column;
+    border-top: 1px solid var(--border-color);
+}
+
+.typing-indicator {
+    font-size: 13px;
+    color: var(--accent-color);
+    height: 18px;
+    margin-bottom: 4px;
+    padding-left: 4px;
+    font-style: italic;
+}
+
+.message-input-box {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.message-input-box input {
+    flex: 1;
+    background: #202c33;
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    padding: 12px 18px;
+    border-radius: 8px;
+    font-size: 15px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.message-input-box input:focus {
+    border-color: var(--accent-color);
+}
+
+.message-input-box button {
+    background: var(--accent-color);
+    color: var(--text-primary);
+    border: none;
+    padding: 12px 26px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 15px;
     cursor: pointer;
+    transition: filter 0.2s;
+}
+
+.message-input-box button:hover {
+    filter: brightness(1.15);
+}
+
+/* Scrollbar layout config */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.2);
 }
