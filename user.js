@@ -1,3 +1,4 @@
+const BACKEND_URL = "http://localhost:3000";
 let socket = null;
 let currentUser = null;
 let currentChatUser = null;
@@ -59,7 +60,7 @@ sendLoginOtpBtn.addEventListener("click", async () => {
     sendLoginOtpBtn.disabled = true;
 
     try {
-        const res = await fetch("/api/send-login-otp", {
+        const res = await fetch(`${BACKEND_URL}/api/login`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email })
@@ -84,8 +85,9 @@ verifyLoginOtpBtn.addEventListener("click", async () => {
         return;
     }
 
+
     try {
-        const res = await fetch("/api/login-with-otp", {
+        const res = await fetch(`${BACKEND_URL}/api/login`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email, otp })
@@ -106,7 +108,7 @@ document.getElementById("loginBtn").addEventListener("click", async () => {
     const errorDiv = document.getElementById("loginError");
 
     try {
-        const res = await fetch("/api/login", {
+        const res = await fetch(`${BACKEND_URL}/api/login`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email, password })
@@ -134,7 +136,7 @@ document.getElementById("signupBtn").addEventListener("click", async () => {
     }
 
     try {
-        const res = await fetch("/api/signup", {
+        const res = await fetch(`${BACKEND_URL}/api/signup`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ name, email, password })
@@ -154,7 +156,7 @@ document.getElementById("verifyOtpBtn").addEventListener("click", async () => {
     const errorDiv = document.getElementById("otpError");
 
     try {
-        const res = await fetch("/api/verify-otp", {
+        const res = await fetch(`${BACKEND_URL}/api/verify-otp`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email: pendingEmail, otp })
@@ -179,7 +181,7 @@ document.getElementById("sendResetOtpBtn").addEventListener("click", async () =>
     const errorDiv = document.getElementById("forgotError");
 
     try {
-        const res = await fetch("/api/forgot-password", {
+        const res = await fetch(`${BACKEND_URL}/api/forgot-password`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email })
@@ -206,7 +208,7 @@ document.getElementById("resetPasswordBtn").addEventListener("click", async () =
     }
 
     try {
-        const res = await fetch("/api/reset-password", {
+        const res = await fetch(`${BACKEND_URL}/api/reset-password`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email: pendingEmail, otp, newPassword })
@@ -257,7 +259,7 @@ async function initChatApp() {
     userNameSpan.textContent = currentUser.name;
 
     const token = localStorage.getItem("token");
-    socket = io({ auth: { token } });
+    socket = io(BACKEND_URL, { auth: { token } });
 
     socket.on("private message", (msg) => {
         if (currentChatUser && msg.fromUserId === currentChatUser.id) {
@@ -316,7 +318,7 @@ function updateOnlineDot(userId, isOnline) {
 
 async function loadUsers(searchQuery = "") {
     const token = localStorage.getItem("token");
-    let url = "/api/users/search?q=" + encodeURIComponent(searchQuery);
+    let url = `${BACKEND_URL}/api/users/search?q=` + encodeURIComponent(searchQuery);
 
     try {
         const res = await fetch(url, { headers: { "Authorization": `Bearer ${token}` } });
@@ -355,7 +357,7 @@ async function selectUser(user) {
 
     const token = localStorage.getItem("token");
     try {
-        const res = await fetch(`/api/messages/${user.id}`, { headers: { "Authorization": `Bearer ${token}` } });
+        const res = await fetch(`${BACKEND_URL}/api/messages/${user.id}`, { headers: { "Authorization": `Bearer ${token}` } });
         const messages = await res.json();
 
         messages.forEach(msg => {
@@ -431,7 +433,7 @@ window.addEventListener("load", async () => {
     if (!token) return;
 
     try {
-        const res = await fetch("/api/verify-token", { headers: { "Authorization": `Bearer ${token}` } });
+        const res = await fetch(`${BACKEND_URL}/api/verify-token`, { headers: { "Authorization": `Bearer ${token}` } });
         if (!res.ok) throw new Error("Invalid token");
         const data = await res.json();
         currentUser = data.user;

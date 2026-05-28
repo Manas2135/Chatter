@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require("cors");
 require("dotenv").config();
 const http = require("http");
 const { Server } = require("socket.io");
@@ -11,7 +12,18 @@ const { initDb, getUserByEmail, createUser, getUserById, getMessagesBetweenUsers
 
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server);
+
+const corsOptions = {
+    origin: process.env.FRONTEND_URL || '*',
+    methods: ["GET", "POST"],
+    credentials: true
+};
+
+app.use(cors(corsOptions));
+
+const io = new Server(server, {
+    cors: corsOptions
+});
 
 const JWT_SECRET = process.env.JWT_SECRET || "chatter-secure-jwt-secret-key-2026";
 const OTP_EXPIRY = 10 * 60 * 1000;
@@ -19,7 +31,6 @@ const OTP_EXPIRY = 10 * 60 * 1000;
 const otpStore = new Map();
 
 app.use(express.json());
-app.use(express.static(__dirname));
 
 const authenticateToken = (req, res, next) => {
     const authHeader = req.headers["authorization"];
