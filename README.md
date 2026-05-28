@@ -37,42 +37,8 @@ CHATTER is a full‑stack real‑time messaging application that lets you **sign
 
 ---
 
-##  How to Run Locally (No Hosting Required)
-
-### Prerequisites
-- [Node.js](https://nodejs.org/) (v14 or later)
-- npm (comes with Node.js)
-- A free [Resend](https://resend.com) account (to send real OTPs)
-
-### Step‑by‑Step Setup
-
-1. **Clone or download the project**  
-   Place all files (`server.js`, `db.js`, `email.js`, `user.js`, `index.html`, `app.css`, `package.json`) in a folder.
-
-2. **Install dependencies**  
-   Open a terminal in that folder and run:
-   ```bash
-   npm install
-3. **Get your Resend API key**
-
-    Go to resend.com and sign up.
-    In your dashboard, go to API Keys → Create API Key.
-    Copy the key (it starts with re_...).
-
-3. **Create a .env and write your secret key**  
-    JJWT_SECRET=your_super_secret_key_(change this according to your preference )
-    RESEND_API_KEY=re_xxxxxxxxxxxxxxxxxxxx
-
-4. **Just run he Server**
-    In your Terminal do node server.js
-    You will see this - 
-
-    Server running on http://localhost:3000
-    Email configured with Ethereal test account
-    Preview URL: https://ethereal.email/login   
-
- 5. **Open the App**
-    Visit http://localhost:3000 in your browser.   
+ **Just Open the App**
+   https://chatter-bay.vercel.app/   
 
 /// YOU ARE GOOD TO GO ///
 ///      SUIIIIII     ///
