@@ -85,7 +85,6 @@ verifyLoginOtpBtn.addEventListener("click", async () => {
         return;
     }
 
-
     try {
         const res = await fetch(`${BACKEND_URL}/api/login`, {
             method: "POST",
@@ -259,7 +258,10 @@ async function initChatApp() {
     userNameSpan.textContent = currentUser.name;
 
     const token = localStorage.getItem("token");
-    socket = io(BACKEND_URL, { auth: { token } });
+    socket = io(BACKEND_URL, {
+        auth: { token },
+        transports: ["websocket"]
+    });
 
     socket.on("private message", (msg) => {
         if (currentChatUser && msg.fromUserId === currentChatUser.id) {

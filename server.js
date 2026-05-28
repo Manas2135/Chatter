@@ -218,29 +218,23 @@ io.on("connection", (socket) => {
     socket.emit("online users", onlineUsersList);
     socket.broadcast.emit("user online", { userId, name: socket.user.name });
 
-    socket.on("private message", async (data) => {
+    socket.on("private message", (data) => {
         const { toUserId, message } = data;
         const fromUserId = userId;
 
-        const savedMsg = await saveMessage(fromUserId, toUserId, message);
         const recipientSocketId = userSockets.get(toUserId);
-
         if (recipientSocketId) {
             io.to(recipientSocketId).emit("private message", {
-                id: savedMsg.id,
                 fromUserId,
                 fromName: socket.user.name,
                 message,
-                timestamp: savedMsg.timestamp
+                timestamp: new Date().toISOString()
+            });
+
+            saveMessage(fromUserId, toUserId, message).catch(err => {
+                console.error("Failed to save message to DB:", err);
             });
         }
-
-        socket.emit("message sent", {
-            id: savedMsg.id,
-            toUserId,
-            message,
-            timestamp: savedMsg.timestamp
-        });
     });
 
     socket.on("typing", (data) => {
