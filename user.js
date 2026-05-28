@@ -1,4 +1,4 @@
-const BACKEND_URL = "http://localhost:3000";
+const BACKEND_URL = "https://chatter-65m4.onrender.com";
 let socket = null;
 let currentUser = null;
 let currentChatUser = null;
