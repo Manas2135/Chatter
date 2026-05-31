@@ -5,13 +5,15 @@ const userSchema = new mongoose.Schema({
     password: { type: String, required: true },
     name: { type: String, required: true },
     verified: { type: Boolean, default: false }
-}, { timestamps: true });
+},
+    { timestamps: true });
 
 const messageSchema = new mongoose.Schema({
     from_user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     to_user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     message: { type: String, required: true }
-}, { timestamps: true });
+},
+    { timestamps: true });
 
 const User = mongoose.model("User", userSchema);
 const Message = mongoose.model("Message", messageSchema);
