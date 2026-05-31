@@ -30,7 +30,7 @@ CHATTER is a full‑stack real‑time messaging application that lets you **sign
 
 - **Technology stack**
   - **Backend**: Node.js, Express, Socket.io
-  - **Database**: SQLite (lightweight, file‑based)
+  - **Database**: MongoDB (lightweight)
   - **Authentication**: JWT (JSON Web Tokens), bcrypt for password hashing
   - **Email**: Resend (sends real OTPs to real email addresses)
   - **Frontend**: HTML5, CSS3, vanilla JavaScript (no frameworks)
