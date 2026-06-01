@@ -29,7 +29,7 @@ async function initDb() {
 }
 
 async function getUserByEmail(email) {
-    return await User.findOne({ email });
+    return await User.findOne({ email }).select('-password');
 }
 
 async function getUserById(id) {
